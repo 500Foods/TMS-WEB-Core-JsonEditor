@@ -1,6 +1,8 @@
-# Template
+# TMS WEB Core JSON Editor
 
-This repository contains...
+This repository contains a JSON editor that has been built with TMS WEB Core (Delphi) and its Miletus Framework, resulting in standard binaries for Windows, Linux, macOS, and Raspberry Pi. This repository also includes a separate TMS WEB Core project used to generate the website published directly here on GitHub, where these executables can be downloaded. This project first appeared in connection with a blog post on the TMS Software website, which can be found here. 
+
+The basic idea behind this project is to provide an alternative front end for JSON configuration files, including the configuration file for this project.  We've all made typos in JSON files, like forgetting a comma or using a {, [, or ( when one of the others was called for. And sometimes it would help to have a bit more information, context, or other documentation when it comes to filling in a value or adding a key of some kind. Well, this is what this tool is for. This project will load up a "Project" JSON file that describes, well, another JSON file. This Project JSON file will describe what should be in the target JSON file, along with other documentation, rules, themes, and so on to help with managing the other file, to the point where this is all that is required for an average person (not a developer!) to make changes without fear of producing an unusable JSON file.
 
 ## Key Dependencies
 As with any modern web application, other JavaScript libraries/dependencies have been used in this project. Most of the time, this is handled via a CDN link (usually JSDelivr) in the Project.html file. In some cases, for performance or other reasons, they may be included directly.
