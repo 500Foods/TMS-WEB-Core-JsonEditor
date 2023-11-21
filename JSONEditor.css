@@ -1,0 +1,59 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: Cairo;
+  overflow: hidden;
+}
+
+:root {
+  --JE-padding: 5px;
+  --JE-rounding1: 20px;
+}
+
+#divBackground {
+  position: absolute;
+  padding: var(--JE-padding);
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+#divMain {
+  position: absolute;
+  padding: var(--JE-padding);
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: var(--JE-padding);
+}
+
+#divOptions {
+  position: relative;
+  background: white;
+  border: 1px solid black;
+  border-radius: var(--JE-rounding1);
+  opacity: 0.5;
+  top: 0px;
+  left: 0px;
+  min-width: 200px;
+  height: 100%;
+  order: 0;
+}
+#divWork {
+  position: relative;
+  background: white;
+  border: 1px solid black;
+  border-radius: var(--JE-rounding1);
+  opacity: 0.5;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  order: 1;
+}
+
+

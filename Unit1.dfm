@@ -1,0 +1,83 @@
+object Form1: TForm1
+  Width = 894
+  Height = 696
+  OnCreate = MiletusFormCreate
+  ClientHeight = 657
+  ClientWidth = 878
+  object divBackground: TWebHTMLDiv
+    Left = 8
+    Top = 8
+    Width = 862
+    Height = 641
+    ElementID = 'divBackground'
+    HeightStyle = ssPercent
+    WidthStyle = ssPercent
+    ElementPosition = epIgnore
+    Role = ''
+    object divMain: TWebHTMLDiv
+      Left = 8
+      Top = 8
+      Width = 833
+      Height = 617
+      ElementID = 'divMain'
+      HeightStyle = ssAuto
+      WidthStyle = ssAuto
+      ChildOrder = 2
+      ElementPosition = epIgnore
+      ElementFont = efCSS
+      Role = ''
+      object divOptions: TWebHTMLDiv
+        Left = 8
+        Top = 8
+        Width = 200
+        Height = 593
+        ElementClassName = 'resize-right'
+        ElementID = 'divOptions'
+        HeightStyle = ssAuto
+        WidthStyle = ssAuto
+        ChildOrder = 2
+        ElementPosition = epIgnore
+        ElementFont = efCSS
+        Role = ''
+        object divFileTypes: TWebHTMLDiv
+          Left = 8
+          Top = 8
+          Width = 100
+          Height = 41
+          ElementID = 'divFileTypes'
+          HeightStyle = ssAuto
+          WidthStyle = ssAuto
+          ElementPosition = epIgnore
+          ElementFont = efCSS
+          Role = ''
+        end
+      end
+      object divWork: TWebHTMLDiv
+        Left = 225
+        Top = 8
+        Width = 592
+        Height = 598
+        ElementID = 'divWork'
+        HeightStyle = ssAuto
+        WidthStyle = ssAuto
+        ChildOrder = 2
+        ElementPosition = epIgnore
+        ElementFont = efCSS
+        Role = ''
+        object divFileHistory: TWebHTMLDiv
+          Left = 8
+          Top = 8
+          Width = 100
+          Height = 41
+          ElementID = 'divFileList'
+          HeightStyle = ssAuto
+          WidthStyle = ssAuto
+          ChildOrder = 1
+          ElementPosition = epIgnore
+          ElementFont = efCSS
+          Role = ''
+        end
+      end
+    end
+  end
+end
