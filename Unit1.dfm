@@ -1,6 +1,8 @@
 object Form1: TForm1
   Width = 894
   Height = 696
+  CSSLibrary = cssBootstrap
+  ElementFont = efCSS
   OnCreate = MiletusFormCreate
   ClientHeight = 657
   ClientWidth = 878
@@ -13,6 +15,7 @@ object Form1: TForm1
     HeightStyle = ssPercent
     WidthStyle = ssPercent
     ElementPosition = epIgnore
+    ElementFont = efCSS
     Role = ''
     object divMain: TWebHTMLDiv
       Left = 8
@@ -39,14 +42,27 @@ object Form1: TForm1
         ElementPosition = epIgnore
         ElementFont = efCSS
         Role = ''
-        object divFileTypes: TWebHTMLDiv
+        object divConfigs: TWebHTMLDiv
           Left = 8
-          Top = 8
+          Top = 56
           Width = 100
-          Height = 41
-          ElementID = 'divFileTypes'
+          Height = 153
+          ElementID = 'divConfigs'
           HeightStyle = ssAuto
           WidthStyle = ssAuto
+          ElementPosition = epIgnore
+          ElementFont = efCSS
+          Role = ''
+        end
+        object divOptionsBG: TWebHTMLDiv
+          Left = 8
+          Top = 8
+          Width = 101
+          Height = 42
+          ElementID = 'divOptionsBG'
+          HeightStyle = ssAuto
+          WidthStyle = ssAuto
+          ChildOrder = 2
           ElementPosition = epIgnore
           ElementFont = efCSS
           Role = ''
@@ -64,12 +80,12 @@ object Form1: TForm1
         ElementPosition = epIgnore
         ElementFont = efCSS
         Role = ''
-        object divFileHistory: TWebHTMLDiv
+        object divWorkBG: TWebHTMLDiv
           Left = 8
           Top = 8
           Width = 100
           Height = 41
-          ElementID = 'divFileList'
+          ElementID = 'divWorkBG'
           HeightStyle = ssAuto
           WidthStyle = ssAuto
           ChildOrder = 1
@@ -79,5 +95,12 @@ object Form1: TForm1
         end
       end
     end
+  end
+  object tmrStart: TWebTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = tmrStartTimer
+    Left = 88
+    Top = 416
   end
 end
