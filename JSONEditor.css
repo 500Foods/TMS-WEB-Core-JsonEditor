@@ -9,6 +9,8 @@ html, body {
   --JE-padding: 5px;
   --JE-rounding1: 20px;
   --JE-rounding2: calc(var(--JE-rounding1) - var(--JE-padding));
+  --JE-gap: 2px;
+  --JE-opacity: 0.8;
 }
 
 #divBackground {
@@ -47,7 +49,7 @@ html, body {
   background: white;
   border: 1px solid black;
   border-radius: var(--JE-rounding1);
-  opacity: 0.75;
+  opacity: var(--JE-opacity);
   top: 0px;
   left: 0px;
   width: 100%;
@@ -61,12 +63,27 @@ html, body {
   flex-direction: column;
   z-index: 1;
   margin: var(--JE-padding);
-  gap: var(--JE-padding);
+  gap: var(--JE-gap);
+  top: 0px;
+  height: calc(100% - 90px);
+  overflow: auto;
+}
+
+#divConfigButtons {
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  margin: var(--JE-padding);
+  gap: var(--JE-gap);
 }
 
 #divWork {
   position: relative;
   overflow: hidden;
+  border-radius: var(--JE-rounding1);
   top: 0px;
   left: 0px;
   width: 100%;
@@ -75,28 +92,88 @@ html, body {
 }
 
 #divWorkBG {
+  position: absolute;
   background: white;
   border: 1px solid black;
   border-radius: var(--JE-rounding1);
-  opacity: 0.75;
+  opacity: var(--JE-opacity);
   top: 0px;
   left: 0px;
-  width: 100%;
-  height: 100%;
+  right: 0px;
+  bottom: 0px;
   z-index: 0;
 }
 
-
+#divConfigButtons > button,
 #divConfigs > button {
+  border: 1px solid black;
   border-radius: var(--JE-rounding2);
   text-align: left;
+  height: 38px;
+  width: 100%;
 }
 
 .Icon {
-  color:white;
+  font-size: 18px;
+  color: white;
   filter: drop-shadow(0px 0px 3px black);
 }
+
 .Label {
-  color:white;
+  font-size: 16px;
+  color: white;
   filter: drop-shadow(0px 0px 3px black);
+}
+
+#pageControl {
+  position: absolute !important;
+  top: 0px !important;
+  left: 0px !important;
+  right: 0px !important;
+  bottom: 0px !important;
+}
+
+.Page {
+}
+
+#divActionLog {
+  font-size: 12px;
+  margin: calc(var(--JE-padding) * 2);
+  padding: var(--JE-padding);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: auto;
+}
+
+#divFileHistory {
+  border: 1px solid black;
+  border-radius: var(--JE-rounding2);
+  font-size: 14px;
+  margin: var(--JE-padding);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: hidden;
+}
+
+.tabulator {
+  background-color: transparent;
+}
+#divFileHistory .tabulator .tabulator-table .tabulator-tableholder .tabulator-footer .tabulator-calcs-holder {
+  border-bottom: none;
+  background-color: transparent;
+}
+.tabulator-row.tabulator-row-odd {
+    background-color: #efefef80;
+}
+.tabulator-row.tabulator-row-even {
+    background-color: #ffffff80;
+}
+.tabulator .tabulator-tableholder .tabulator-table {
+    background-color: transparent;
 }

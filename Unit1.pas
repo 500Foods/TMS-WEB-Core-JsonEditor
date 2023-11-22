@@ -6,6 +6,7 @@ uses
   System.SysUtils,
   System.Classes,
   System.StrUtils,
+  System.DateUtils,
 
   WEBLib.REST,
   WEBLib.JSON,
@@ -20,8 +21,12 @@ uses
   WEBLib.Miletus,
   WEBLib.Dialogs,
   WEBLib.WebCtrls,
+  WEBLib.ExtCtrls,
+  WEBLib.StdCtrls,
+  WEBLib.ComCtrls,
 
-  Vcl.Controls, WEBLib.ExtCtrls, Vcl.StdCtrls, WEBLib.StdCtrls;
+  Vcl.Controls,
+  Vcl.StdCtrls;
 
 type
   TForm1 = class(TMiletusForm)
@@ -33,6 +38,22 @@ type
     divWorkBG: TWebHTMLDiv;
     tmrStart: TWebTimer;
     divOptionsBG: TWebHTMLDiv;
+    divConfigButtons: TWebHTMLDiv;
+    btnLoadConfig: TWebButton;
+    btnViewActionLog: TWebButton;
+    pageControl: TWebPageControl;
+    pageActionLog: TWebTabSheet;
+    pageFileHistory: TWebTabSheet;
+    WebPageControl1Sheet3: TWebTabSheet;
+    divActionLog: TWebHTMLDiv;
+    divFileHistory: TWebHTMLDiv;
+    divJSONTree: TWebHTMLDiv;
+    divJSONButtons: TWebHTMLDiv;
+    btnEditJSON: TWebButton;
+    btnQuitJSON: TWebButton;
+    btnSaveJSON: TWebButton;
+    AddConfig: TMiletusOpenDialog;
+    OpenJSON: TMiletusOpenDialog;
     procedure LogEvent(Details: String);
     procedure LogException(Details: String; EClass: String; EMessage: String; EData: String);
     procedure LoadConfigurationDefaults;
@@ -40,7 +61,12 @@ type
     [async] procedure MiletusFormCreate(Sender: TObject);
     procedure tmrStartTimer(Sender: TObject);
     procedure AddConfigButton(ConfigName: String; ConfigIcon: String; ConfigClass: String; ConfigID: String);
-    procedure ConfigClick(ConfigID: String);
+    procedure ConfigClick(ConfigID: String; ConfigName: String);
+    procedure btnViewActionLogClick(Sender: TObject);
+    procedure btnLoadConfigClick(Sender: TObject);
+    procedure LoadConfig(AFilename: String);
+    procedure AddConfigExecute(Sender: TObject; AFileName: string);
+    procedure OpenJSONExecute(Sender: TObject; AFileName: string);
   private
     { Private declarations }
   public
@@ -50,6 +76,9 @@ type
     AppConfig: TJSONObject;
     AllConfigs: TJSONArray;
     AppName: String;
+
+    tabFileHistory: JSValue;
+    tabFileHistoryReady: Boolean;
   end;
 
 var
@@ -61,28 +90,84 @@ implementation
 
 procedure TForm1.AddConfigButton(ConfigName, ConfigIcon: String; ConfigClass: String; ConfigID: String);
 begin
-  asm
+  {$IFNDEF WIN32} asm {
     var btn = document.createElement('button');
     btn.id = ConfigID;
-    btn.classList = 'btn '+ConfigClass;
+    btn.classList = 'btn btn-'+ConfigClass;
     btn.innerHTML = '<i class="fa-solid fa-fw Icon '+ConfigIcon+' me-2"></i><span class="Label">'+ConfigName+'</span>';
     btn.addEventListener('click', function(e) {
-      pas.Unit1.Form1.ConfigClick(e.target.id);
+      if (e.target.tagName == 'BUTTON') {
+        pas.Unit1.Form1.ConfigClick(e.target.id, e.target.lastElementChild.innerHTML);
+      }
+      else if (e.target.parentElement.tagName == 'BUTTON') {
+        pas.Unit1.Form1.ConfigClick(e.target.parentElement.id, e.target.parentElement.lastElementChild.innerHTML);
+      }
     });
     divConfigs.appendChild(btn);
+  } end; {$ENDIF}
+end;
+
+procedure TForm1.btnLoadConfigClick(Sender: TObject);
+var
+  StartPath: String;
+begin
+  LogEvent('Load Config Clicked');
+
+  // Close Action Log Viewer if open
+  if btnViewActionLog.Tag = 1
+  then btnViewActionLogClick(nil);
+
+  GetMiletusPath(NP_APPPATH, StartPath);
+  AddConfig.Title := 'Open a '+Form1.Caption+' Config File';
+  AddConfig.FileName := '';
+  AddConfig.DefaultExt := '.config';
+  AddConfig.InitialDir := StartPath;
+  AddConfig.Execute;
+end;
+
+procedure TForm1.btnViewActionLogClick(Sender: TObject);
+begin
+  if btnViewActionLog.Tag = 0 then
+  begin
+    LogEvent('Viewing Action Log');
+    btnViewActionLog.Caption := '<i class="fa-solid fa-xmark fa-fw me-2 Icon fa-xl"></i><span class="Label">Close Action Log</span>';
+    divActionLog.HTML.Text := '<pre>'+AppEventLog.Text+'</pre>';
+    pageControl.TabIndex := 0;
+    btnViewActionLog.Tag := 1;
+  end
+  else
+  begin
+    LogEvent('Closed Action Log');
+    btnViewActionLog.Caption := '<i class="fa-solid fa-scroll fa-fw me-2 Icon fa-xl"></i><span class="Label">View Action Log</span>';
+    pageControl.TabIndex := 1;
+    btnViewActionLog.Tag := 0;
   end;
 end;
 
-procedure TForm1.ConfigClick(ConfigID: String);
+procedure TForm1.ConfigClick(ConfigID: String; ConfigName: String);
+var
+  i: Integer;
+  StartPath: String;
 begin
-  Showmessage(ConfigID);
+  LogEvent('Config Clicked: '+ConfigName+' [ '+ConfigID+' ]');
+
+  // Close Action Log Viewer if open
+  if btnViewActionLog.Tag = 1
+  then btnViewActionLogClick(nil);
+
+  GetMiletusPath(NP_APPPATH, StartPath);
+  OpenJSON.Title := 'Open a JSON File: '+ConfigName;
+  OpenJSON.FileName := '';
+  OpenJSON.DefaultExt := '.json';
+  OpenJSON.InitialDir := StartPath;
+  OpenJSON.Execute;
 end;
 
 procedure TForm1.InitializeJavaScriptLibraries;
 begin
 
   // InteractJS
-  asm
+  {$IFNDEF WIN32} asm {
      interact('.resize-right')
       .resizable({
         edges: { left: false, right: true, bottom:false, top: false },
@@ -116,8 +201,91 @@ begin
       target.setAttribute('data-y', y)
     };
     window.dragMoveListener = dragMoveListener
+  } end; {$ENDIF}
+
+  // Tabulator Defaults
+  {$IFNDEF WIN32} asm {
+    Tabulator.defaultOptions.layout = "fitColumns";
+    Tabulator.defaultOptions.selectable = 1;
+    Tabulator.defaultOptions.columnHeaderSortMulti = true,
+    Tabulator.defaultOptions.clipboard = "copy";
+    Tabulator.defaultOptions.groupToggleElement = "header",
+    Tabulator.defaultOptions.headerSortElement = function(column, dir) {
+      switch(dir){
+        case "asc":  return "<i class='fa-solid fa-sort-up'>";
+                     break;
+        case "desc": return "<i class='fa-solid fa-sort-down'>";
+                     break;
+        default:     return "<i class='fa-solid fa-sort'>";
+      }
+    },
+    Tabulator.defaultOptions.columnDefaults = {
+      headerHozAlign: "left",
+      hozAlign: "left",
+      headerSortStartingDir: "desc",
+      headerSortTristate: true
+    };
+  } end; {$ENDIF}
+
+  // File History
+  {$IFNDEF WIN32} asm {
+    this.tabFileHistory = new Tabulator("#divFileHistory", {
+      index: "ID",
+      layout: "fitColumns",
+      selectable: 1,
+      rowHeight: 28,
+      columnDefaults:{
+        resizable: false
+      },
+      columns: [
+        { title: "ID", field: "ID", visible: false },
+        { title: "Type", field: "Icon", visible: false },
+        { title: "Class", field: "Class", visible: false },
+        { title: false, field: "Type", hozAlign: "center", formatter: "html", minWidth: 40, width: 40, bottomCalc: "count",
+            formatter: function(cell, formatterParams, onRendered) {
+              return '<div title="'+cell.getValue()+'" style="margin:-4px;height:28px;padding-top:4px;" class="bg-'+cell.getRow().getCell('Class').getValue()+'"><i class="fa-solid Icon fa-fw '+cell.getRow().getCell('Icon').getValue()+'"></i></div>';
+            }
+        },
+        { title: "Description", field: "Name" },
+        { title: "Filename", field: "Filename" },
+        { title: "Accessed", field: "Accessed", width: 160 }
+      ]
+    });
+    this.tabFileHistory.on("tableBuilt", function(){
+      pas.Unit1.Form1.tabFileHistoryReady = true;
+    });
+  } end; {$ENDIF}
+
+end;
+
+procedure TForm1.LoadConfig(AFilename: String);
+var
+  ConfigFile: TMiletusStringList;
+  Config: TJSONObject;
+begin
+  ConfigFile := TMiletusStringList.Create;
+  try
+    ConfigFile.LoadFromFile(AFilename);
+  except on E: Exception do
+    begin
+      LogException('Load Config Failed', E.ClassName, E.Message, AFilename);
+    end;
   end;
 
+  try
+    Config := TJSONObject.ParseJSONValue(ConfigFile.Text) as TJSONObject;
+    AddConfigButton(
+      (Config.GetValue('Name') as TJSONString).Value,
+      (Config.GetValue('Icon') as TJSONString).Value,
+      (Config.GetValue('Class') as TJSONString).Value,
+      'Config'+IntToStr(AllConfigs.Count)
+    );
+    AllConfigs.Add(Config);
+  except on E: Exception do
+    begin
+      LogException('Parse Config Failed', E.ClassName, E.Message, AFilename);
+    end;
+  end;
 end;
 
 procedure TForm1.LoadConfigurationDefaults;
@@ -134,7 +302,7 @@ begin
   then AppConfig.AddPair('Icon', 'fa-screwdriver-wrench');
 
   if AppConfig.GetValue('Class') = nil
-  then AppConfig.AddPair('Class', 'btn-primary');
+  then AppConfig.AddPair('Class', 'primary');
 
   if AppConfig.GetValue('CSS Background') = nil
   then AppConfig.AddPair('CSS Background', '');
@@ -176,11 +344,14 @@ var
   AppConfigName: String;
   AppConfigFile: TMiletusStringList;
   AppconfigPath: String;
+  ElapsedTime: TDateTime;
 begin
+  ElapsedTime := Now;
+  tabFileHistoryReady := False;
 
   // Initialize Application Event Log
   AppEventLog := TMiletusStringList.Create;
-  LogEvent('Application Initialzing.');
+  LogEvent('Application Initialzing');
 
   // Identify the configuration file
   // NOTE: We're assuming it is in the same folder as the EXE
@@ -246,29 +417,50 @@ begin
   // Background
   divBackground.ElementHandle.style.cssText := window.atob((AppConfig.GetValue('CSS Background') as TJSONString).Value);
 
+  // Default Tab
+  pageControl.TabIndex := 1;  // File History
+
   // Put all the JavaScript here just to make FormCreate a little more organized
+  LogEvent('- Initializing Third-Party JS Libraries');
   InitializeJavaScriptLibraries;
 
   // All done here. Leet's continue there.
-  LogEvent('Initialization Complete.');
+  LogEvent('Initialization Complete ('+IntToStr(MillisecondsBetween(Now, ElapsedTime))+'ms)');
   LogEvent('');
 
   tmrStart.Enabled := True;
 end;
 
+procedure TForm1.OpenJSONExecute(Sender: TObject; AFileName: string);
+begin
+  LogEvent('- Loading JSON: '+AFilename);
+
+end;
+
+procedure TForm1.AddConfigExecute(Sender: TObject; AFileName: string);
+begin
+  LogEvent('- Loading Config: '+AFilename);
+  LoadConfig(AFilename);
+end;
+
 procedure TForm1.tmrStartTimer(Sender: TObject);
 var
   i: Integer;
+  s: String;
   Config: TJSONObject;
   Configs: TJSONArray;
   ConfigName: String;
   ConfigFile: TMiletusStringList;
   ConfigFilename: String;
+  ElapsedTime: TDateTime;
 begin
+  if not(tabFileHistoryReady) then exit;
 
   tmrStart.Enabled := False;
+  ElapsedTime := Now;
+
   LogEvent('');
-  LogEvent('Startup.');
+  LogEvent('Startup');
 
   AllConfigs := TJSONArray.Create;
 
@@ -276,7 +468,7 @@ begin
   // We'll get these from the individual JSON files as well as from our own configuratin.
   i := 0;
   Configs := AppConfig.GetValue('Configs') as TJSONArray;
-  LogEvent(' - Configs found: '+IntToStr(Configs.Count - 1));
+  LogEvent('- Configs Found: '+IntToStr(Configs.Count - 1));
   while i < Configs.Count do
   begin
     ConfigName := ((Configs[i] as TJSONObject).GetValue('Name') as TJSONString).Value;
@@ -299,36 +491,41 @@ begin
     // Otherwise, iterate through the list add retrieve the JSON for each
     else
     begin
-      ConfigFile := TMiletusStringList.Create;
-      try
-        ConfigFile.LoadFromFile(ConfigFilename);
-      except on E: Exception do
-        begin
-          LogException('Load Config Failed: '+ConfigName, E.ClassName, E.Message, ConfigFilename);
-        end;
-      end;
-
-      try
-        Config := TJSONObject.ParseJSONValue(ConfigFile.Text) as TJSONObject;
-        AddConfigButton(
-          (Config.GetValue('Name') as TJSONString).Value,
-          (Config.GetValue('Icon') as TJSONString).Value,
-          (Config.GetValue('Class') as TJSONString).Value,
-          'Config'+IntToStr(i)
-        );
-        AllConfigs.Add(Config);
-      except on E: Exception do
-        begin
-          LogException('Parse Config Failed: '+ConfigName, E.ClassName, E.Message, ConfigFilename);
-        end;
-      end;
-
-
+      LoadConfig(ConfigFileName);
     end;
 
     i := i + 1;
   end;
-  LogEvent('Startup complete.');
+
+
+  // Load Recent File history
+  LogEvent('- Loading File History');
+  ConfigFile := TMiletusStringList.Create;
+  ConfigFile.Text := '';
+  i := 0;
+  try
+    ConfigFile.LoadFromFile('Recent.history');
+  except on E: Exception do
+    begin
+      LogException('Load History Failed', E.ClassName, E.Message, 'Recent.history');
+    end;
+  end;
+
+  if ConfigFile.Text <> '' then
+  begin
+    s := ConfigFile.Text;
+    asm
+      var filehistory = JSON.parse(s);
+      this.tabFileHistory.replaceData(filehistory);
+      i = this.tabFileHistory.getDataCount();
+    end;
+  end;
+  LogEvent('- File History Records Found: '+IntToStr(i));
+
+
+  LogEvent('Startup complete ('+IntToStr(MillisecondsBetween(Now, Elapsedtime))+'ms)');
+  LogEvent('');
+  LogEvent('Ready');
   LogEvent('');
 
 end;
