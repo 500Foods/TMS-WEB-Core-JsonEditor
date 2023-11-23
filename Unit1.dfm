@@ -87,7 +87,7 @@ object Form1: TForm1
             Caption = 
               '<i class="fa-solid fa-upload fa-fw Icon me-2 fa-xl"></i><span cl' +
               'ass="Label">Load Configuration</span>'
-            ElementClassName = 'btn btn-success'
+            ElementClassName = 'btn btn-sm btn-success'
             ElementID = 'btnLoadConfig'
             ElementFont = efCSS
             ElementPosition = epIgnore
@@ -106,7 +106,7 @@ object Form1: TForm1
               '<i class="fa-solid fa-scroll fa-fw me-2 Icon fa-xl"></i><span cl' +
               'ass="Label">View Action Log</span>'
             ChildOrder = 1
-            ElementClassName = 'btn btn-danger'
+            ElementClassName = 'btn btn-sm btn-danger'
             ElementID = 'btnViewActionLog'
             ElementFont = efCSS
             ElementPosition = epIgnore
@@ -135,7 +135,7 @@ object Form1: TForm1
           Left = 11
           Top = 263
           Width = 101
-          Height = 93
+          Height = 69
           ElementID = 'divJSONButtons'
           HeightStyle = ssAuto
           WidthStyle = ssAuto
@@ -152,7 +152,7 @@ object Form1: TForm1
             Caption = 
               '<i class="fa-solid fa-code fa-fw Icon me-2 fa-xl"></i><span clas' +
               's="Label">Edit JSON</span>'
-            ElementClassName = 'btn btn-success'
+            ElementClassName = 'btn btn-sm btn-success'
             ElementID = 'btnEditJSON'
             ElementFont = efCSS
             ElementPosition = epIgnore
@@ -160,36 +160,18 @@ object Form1: TForm1
             HeightPercent = 100.000000000000000000
             WidthStyle = ssPercent
             WidthPercent = 100.000000000000000000
+            OnClick = btnEditJSONClick
           end
-          object btnQuitJSON: TWebButton
+          object btnSaveJSON: TWebButton
             Left = 3
-            Top = 29
+            Top = 34
             Width = 80
             Height = 25
             Caption = 
               '<i class="fa-solid fa-left-long fa-fw me-2 Icon fa-xl"></i><span' +
               ' class="Label">Back to Files</span>'
             ChildOrder = 1
-            ElementClassName = 'btn btn-danger'
-            ElementID = 'btnQuitJSON'
-            ElementFont = efCSS
-            ElementPosition = epIgnore
-            HeightStyle = ssAuto
-            HeightPercent = 100.000000000000000000
-            WidthStyle = ssAuto
-            WidthPercent = 100.000000000000000000
-            OnClick = btnQuitJSONClick
-          end
-          object btnSaveJSON: TWebButton
-            Left = 3
-            Top = 53
-            Width = 80
-            Height = 25
-            Caption = 
-              '<i class="fa-solid fa-download fa-fw me-2 Icon fa-xl"></i><span ' +
-              'class="Label">Save Changes</span>'
-            ChildOrder = 1
-            ElementClassName = 'btn btn-warning'
+            ElementClassName = 'btn btn-sm btn-danger'
             ElementID = 'btnSaveJSON'
             ElementFont = efCSS
             ElementPosition = epIgnore
@@ -197,7 +179,7 @@ object Form1: TForm1
             HeightPercent = 100.000000000000000000
             WidthStyle = ssAuto
             WidthPercent = 100.000000000000000000
-            OnClick = btnViewActionLogClick
+            OnClick = btnSaveJSONClick
           end
         end
       end

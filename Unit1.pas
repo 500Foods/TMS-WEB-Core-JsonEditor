@@ -50,7 +50,6 @@ type
     divJSONTree: TWebHTMLDiv;
     divJSONButtons: TWebHTMLDiv;
     btnEditJSON: TWebButton;
-    btnQuitJSON: TWebButton;
     btnSaveJSON: TWebButton;
     AddConfig: TMiletusOpenDialog;
     OpenJSON: TMiletusOpenDialog;
@@ -72,7 +71,8 @@ type
     procedure LoadConfig(AFilename: String);
     procedure AddConfigExecute(Sender: TObject; AFileName: string);
     procedure OpenJSONExecute(Sender: TObject; AFileName: string);
-    procedure btnQuitJSONClick(Sender: TObject);
+    procedure btnEditJSONClick(Sender: TObject);
+    procedure btnSaveJSONClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -102,7 +102,7 @@ begin
   {$IFNDEF WIN32} asm {
     var btn = document.createElement('button');
     btn.id = ConfigID;
-    btn.classList = 'btn btn-'+ConfigClass;
+    btn.classList = 'btn btn-sm btn-'+ConfigClass;
     btn.innerHTML = '<i class="fa-solid fa-fw Icon '+ConfigIcon+' me-2"></i><span class="Label">'+ConfigName+'</span>';
     btn.addEventListener('click', function(e) {
       if (e.target.tagName == 'BUTTON') {
@@ -114,6 +114,11 @@ begin
     });
     divConfigs.appendChild(btn);
   } end; {$ENDIF}
+end;
+
+procedure TForm1.btnEditJSONClick(Sender: TObject);
+begin
+  pageControl.TabIndex := 2;
 end;
 
 procedure TForm1.btnLoadConfigClick(Sender: TObject);
@@ -134,7 +139,7 @@ begin
   AddConfig.Execute;
 end;
 
-procedure TForm1.btnQuitJSONClick(Sender: TObject);
+procedure TForm1.btnSaveJSONClick(Sender: TObject);
 begin
   divJSONTree.Visible := False;
   divJSONButtons.Visible := False;

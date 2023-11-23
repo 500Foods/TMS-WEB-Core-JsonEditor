@@ -7,7 +7,7 @@ html, body {
 
 :root {
   --JE-padding: 5px;
-  --JE-rounding1: 20px;
+  --JE-rounding1: 25px;
   --JE-rounding2: calc(var(--JE-rounding1) - var(--JE-padding));
   --JE-gap: 2px;
   --JE-opacity: 0.8;
@@ -37,6 +37,8 @@ html, body {
 #divOptions {
   position: relative;
   overflow: hidden;
+  border: 1px solid black;
+  border-radius: var(--JE-rounding1);
   top: 0px;
   left: 0px;
   min-width: 200px;
@@ -47,8 +49,6 @@ html, body {
 #divOptionsBG {
   position: absolute;
   background: white;
-  border: 1px solid black;
-  border-radius: var(--JE-rounding1);
   opacity: var(--JE-opacity);
   top: 0px;
   left: 0px;
@@ -66,7 +66,7 @@ html, body {
   margin: var(--JE-padding);
   gap: var(--JE-gap);
   top: 0px;
-  height: calc(100% - 90px);
+  height: calc(100% - 83px);
   overflow: auto;
 }
 
@@ -113,7 +113,7 @@ html, body {
   border: 1px solid black;
   border-radius: var(--JE-rounding2);
   text-align: left;
-  height: 38px;
+  height: 34px;
   width: 100%;
 }
 
