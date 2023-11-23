@@ -7,7 +7,7 @@ html, body {
 
 :root {
   --JE-padding: 5px;
-  --JE-rounding1: 25px;
+  --JE-rounding1: 20px;
   --JE-rounding2: calc(var(--JE-rounding1) - var(--JE-padding));
   --JE-gap: 2px;
   --JE-opacity: 0.8;

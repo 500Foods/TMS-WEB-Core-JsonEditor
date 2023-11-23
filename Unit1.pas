@@ -73,6 +73,7 @@ type
     procedure OpenJSONExecute(Sender: TObject; AFileName: string);
     procedure btnEditJSONClick(Sender: TObject);
     procedure btnSaveJSONClick(Sender: TObject);
+    procedure HistoryClick(ConfigName: String; AFileName:String);
   private
     { Private declarations }
   public
@@ -82,12 +83,15 @@ type
     AppConfig: TJSONObject;
     AllConfigs: TJSONArray;
     AppName: String;
+    AppPath: String;
 
     tabFileHistory: JSValue;
     tabFileHistoryReady: Boolean;
 
     DataStr: String;
     DataJS: JSValue;
+
+    CurrentConfig: Integer;
   end;
 
 var
@@ -122,8 +126,6 @@ begin
 end;
 
 procedure TForm1.btnLoadConfigClick(Sender: TObject);
-var
-  StartPath: String;
 begin
   LogEvent('Load Config Clicked');
 
@@ -131,11 +133,10 @@ begin
   if btnViewActionLog.Tag = 1
   then btnViewActionLogClick(nil);
 
-  GetMiletusPath(NP_APPPATH, StartPath);
   AddConfig.Title := 'Open a '+Form1.Caption+' Config File';
   AddConfig.FileName := '';
   AddConfig.DefaultExt := '.config';
-  AddConfig.InitialDir := StartPath;
+  AddConfig.InitialDir := AppPath;
   AddConfig.Execute;
 end;
 
@@ -148,6 +149,12 @@ begin
   divConfigButtons.Visible := True;
 
   pageControl.TabIndex := 1;
+
+  // Resort and Redraw the FileHistory table
+  {$IFNDEF WIN32} asm {
+    pas.Unit1.Form1.tabFileHistory.setSort(pas.Unit1.Form1.tabFileHistory.getSorters())
+    pas.Unit1.Form1.tabFileHistory.redraw(true);
+  } end; {$ENDIF}
 end;
 
 procedure TForm1.btnViewActionLogClick(Sender: TObject);
@@ -166,6 +173,12 @@ begin
     btnViewActionLog.Caption := '<i class="fa-solid fa-scroll fa-fw me-2 Icon fa-xl"></i><span class="Label">View Action Log</span>';
     pageControl.TabIndex := 1;
     btnViewActionLog.Tag := 0;
+
+    // Resort and Redraw the FileHistory table
+    {$IFNDEF WIN32} asm {
+      pas.Unit1.Form1.tabFileHistory.setSort(pas.Unit1.Form1.tabFileHistory.getSorters())
+      pas.Unit1.Form1.tabFileHistory.redraw(true);
+    } end; {$ENDIF}
   end;
 end;
 
@@ -175,17 +188,47 @@ var
   StartPath: String;
 begin
   LogEvent('Config Clicked: '+ConfigName+' [ '+ConfigID+' ]');
+  CurrentConfig := StrToInt(StringReplace(ConfigID,'Config','',[]));
 
   // Close Action Log Viewer if open
   if btnViewActionLog.Tag = 1
   then btnViewActionLogClick(nil);
 
-  GetMiletusPath(NP_APPPATH, StartPath);
   OpenJSON.Title := 'Open a JSON File: '+ConfigName;
   OpenJSON.FileName := '';
   OpenJSON.DefaultExt := '.json';
   OpenJSON.InitialDir := StartPath;
   OpenJSON.Execute;
+end;
+
+procedure TForm1.HistoryClick(ConfigName: String; AFileName: String);
+var
+  i: Integer;
+  ConfigID: Integer;
+begin
+  // got a config name and a filename - need to see if the config is already loaded
+  i := 0;
+  ConfigID := -1;
+  while i < AllConfigs.Count do
+  begin
+    if ((AllConfigs.Items[i] as TJSONObject).GetValue('Name') as TJSONString).Value = ConfigName
+    then ConfigID := i;
+    i := i + 1;
+  end;
+
+  if ConfigID = -1 then
+  begin
+    ErrorBox.Title := 'Error Loading JSON File';
+    ErrorBox.Content := 'This file was associated with a Configuration that has not been loaded. '+
+                        'Please either load the [ '+ConfigName+' ] configuration and try again, or '+
+                        'load the file with a different Configuration.';
+    ErrorBox.Execute;
+  end
+  else
+  begin
+    CurrentConfig := ConfigID;
+    OpenJSONExecute(nil, AFileName);
+  end;
 end;
 
 procedure TForm1.InitializeJavaScriptLibraries;
@@ -262,6 +305,7 @@ begin
       columnDefaults:{
         resizable: false
       },
+      initialSort: [{column:"Accessed", dir:"desc"}],
       columns: [
         { title: "ID", field: "ID", visible: false },
         { title: "Type", field: "Icon", visible: false },
@@ -272,12 +316,22 @@ begin
             }
         },
         { title: "Description", field: "Name" },
-        { title: "Filename", field: "Filename" },
+        { title: "Filename", field: "Filename",
+            formatter: function(cell, formatterParams, onRendered) {
+              return '<div title="'+cell.getValue()+'">'+cell.getValue().split('\\').slice(-1)+'</div>';
+            }
+        },
         { title: "Accessed", field: "Accessed", width: 160 }
       ]
     });
     this.tabFileHistory.on("tableBuilt", function(){
       pas.Unit1.Form1.tabFileHistoryReady = true;
+    });
+    this.tabFileHistory.on("rowDblClick", function(e,row){
+      pas.Unit1.Form1.HistoryClick(
+        row.getCell("Type").getValue(),
+        row.getCell("Filename").getValue()
+      );
     });
   } end; {$ENDIF}
 
@@ -287,10 +341,15 @@ procedure TForm1.LoadConfig(AFilename: String);
 var
   ConfigFile: TMiletusStringList;
   Config: TJSONObject;
+  BFileName: String;
 begin
+  BFileName := StringReplace(AFileName,'\\','/',[rfReplaceAll]);
+  if Pos('/',BFileName) = 0
+  then BFileName := AppPath+'/'+BFileName;
+
   ConfigFile := TMiletusStringList.Create;
   try
-    ConfigFile.LoadFromFile(AFilename);
+    ConfigFile.LoadFromFile(BFilename);
   except on E: Exception do
     begin
       LogException('Load Config Failed', E.ClassName, E.Message, AFilename);
@@ -368,7 +427,6 @@ var
   i: Integer;
   AppConfigName: String;
   AppConfigFile: TMiletusStringList;
-  AppconfigPath: String;
   ElapsedTime: TDateTime;
 begin
   ElapsedTime := Now;
@@ -381,9 +439,8 @@ begin
   // Identify the configuration file
   // NOTE: We're assuming it is in the same folder as the EXE
   // But we can use GetMiletusPath if it is stored elsewhere
-  GetMiletusPath(NP_APPPATH, AppConfigPath);
-  AppConfigName := AppConfigPath+'\JSONEditor.config';
-  AppConfigName := 'JSONEditor.config';
+  GetMiletusPath(NP_APPPATH, AppPath);
+  AppConfigName := AppPath+'/JSONEditor.config';
 
   // Override the above if one is passed on the commmand-line
   await(Boolean, TTMSParams.Execute);
@@ -462,6 +519,14 @@ var
   JSONArr: TJSONArray;
   JSONFile: TMiletusStringList;
 
+  JSONDesc: String;
+  ConfigName: String;
+  ConfigIcon: String;
+  ConfigClass: String;
+  ConfigTime: String;
+
+  FileHistory: String;
+  FileHistoryFile: TMiletusStringList;
 begin
   LogEvent('Loading JSON: '+AFilename);
 
@@ -529,7 +594,82 @@ begin
     begin
       pageControl.TabIndex := 3
     end;
+
+    // Add file to file history
+    LogEvent('Updating File History');
+
+    // These all come from the configuration chosen
+    ConfigName := ((AllConfigs.Items[CurrentConfig] as TJSONObject).GetValue('Name') as TJSONString).Value;
+    ConfigIcon := ((AllConfigs.Items[CurrentConfig] as TJSONObject).GetValue('Icon') as TJSONString).Value;
+    ConfigClass := ((AllConfigs.Items[CurrentConfig] as TJSONObject).GetValue('Class') as TJSONString).Value;
+    ConfigTime := FormatDateTime('yyyy-mm-dd hh:nn:ss',Now);
+
+    // Here we'd really like some kind of description to come from inside the JSON. But this will likely have
+    // to be further refined based on the individual JSON chosen. Like the first option, something like that,
+    // or an identifier that we can set in the config to locate the description in the particular JSON file.
+    // For now, we'll just make some guesses at what that might be.
+
+    JSONDesc := ConfigName;
+    if JSONArr.Count > 0 then
+    begin
+      if (JSONArr.Items[0] is TJSONObject) then
+      begin
+        if (JSONArr.Items[0] as TJSONObject).GetValue('key') <> nil
+        then JSONDesc := ((JSONArr.Items[0] as TJSONObject).GetValue('key') as TJSONString).Value;
+
+        if (JSONArr.Items[0] as TJSONObject).GetValue('name') <> nil
+        then JSONDesc := ((JSONArr.Items[0] as TJSONObject).GetValue('name') as TJSONString).Value;
+
+        if (JSONArr.Items[0] as TJSONObject).GetValue('Name') <> nil
+        then JSONDesc := ((JSONArr.Items[0] as TJSONObject).GetValue('Name') as TJSONString).Value;
+
+        if (JSONArr.Items[0] as TJSONObject).GetValue('ServerName') <> nil
+        then JSONDesc := ((JSONArr.Items[0] as TJSONObject).GetValue('ServerName') as TJSONString).Value;
+      end;
+    end;
+    if JSONObj.Count > 0 then
+    begin
+      if JSONObj.GetValue('key') <> nil
+      then JSONDesc := (JSONObj.GetValue('key') as TJSONString).Value;
+
+      if JSONObj.GetValue('name') <> nil
+      then JSONDesc := (JSONObj.GetValue('name') as TJSONString).Value;
+
+      if JSONObj.GetValue('Name') <> nil
+      then JSONDesc := (JSONObj.GetValue('Name') as TJSONString).Value;
+
+      if JSONObj.GetValue('ServerName') <> nil
+      then JSONDesc := (JSONObj.GetValue('ServerName') as TJSONString).Value;
+    end;
+
+//    FileHistory := '';
+    {$IFNDEF WIN32} asm {
+      var tab = pas.Unit1.Form1.tabFileHistory;
+      var ConfigNum = tab.getDataCount();
+      tab.addRow({
+        "ID": ConfigNum,
+        "Type": ConfigName,
+        "Icon": ConfigIcon,
+        "Class": ConfigClass,
+        "Name": JSONDesc,
+        "Filename": AFileName,
+        "Accessed": ConfigTime
+      });
+      FileHistory = JSON.stringify(tab.getData());
+    } end; {$ENDIF}
   end;
+
+  LogEvent('Saving File History');
+  FileHistoryFile := TMiletusStringList.Create;
+  FileHistoryFile.Text := FileHistory;
+  try
+    FileHistoryFile.SaveToFile(AppPath+'/Recent.history');
+  except on E: Exception do
+    begin
+      LogException('Saving File History', E.ClassName, E.Message, 'Recent.history');
+    end;
+  end;
+
 end;
 
 procedure TForm1.AddConfigExecute(Sender: TObject; AFileName: string);
@@ -599,7 +739,7 @@ begin
   ConfigFile.Text := '';
   i := 0;
   try
-    ConfigFile.LoadFromFile('Recent.history');
+    ConfigFile.LoadFromFile(AppPath+'/Recent.history');
   except on E: Exception do
     begin
       LogException('Load History Failed', E.ClassName, E.Message, 'Recent.history');
