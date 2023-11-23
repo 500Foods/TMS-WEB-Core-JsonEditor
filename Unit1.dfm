@@ -150,8 +150,8 @@ object Form1: TForm1
             Width = 80
             Height = 25
             Caption = 
-              '<i class="fa-solid fa-upload fa-fw Icon me-2 fa-xl"></i><span cl' +
-              'ass="Label">Load Configuration</span>'
+              '<i class="fa-solid fa-code fa-fw Icon me-2 fa-xl"></i><span clas' +
+              's="Label">Edit JSON</span>'
             ElementClassName = 'btn btn-success'
             ElementID = 'btnEditJSON'
             ElementFont = efCSS
@@ -167,8 +167,8 @@ object Form1: TForm1
             Width = 80
             Height = 25
             Caption = 
-              '<i class="fa-solid fa-scroll fa-fw me-2 Icon fa-xl"></i><span cl' +
-              'ass="Label">View Action Log</span>'
+              '<i class="fa-solid fa-left-long fa-fw me-2 Icon fa-xl"></i><span' +
+              ' class="Label">Back to Files</span>'
             ChildOrder = 1
             ElementClassName = 'btn btn-danger'
             ElementID = 'btnQuitJSON'
@@ -178,7 +178,7 @@ object Form1: TForm1
             HeightPercent = 100.000000000000000000
             WidthStyle = ssAuto
             WidthPercent = 100.000000000000000000
-            OnClick = btnViewActionLogClick
+            OnClick = btnQuitJSONClick
           end
           object btnSaveJSON: TWebButton
             Left = 3
@@ -186,10 +186,10 @@ object Form1: TForm1
             Width = 80
             Height = 25
             Caption = 
-              '<i class="fa-solid fa-scroll fa-fw me-2 Icon fa-xl"></i><span cl' +
-              'ass="Label">View Action Log</span>'
+              '<i class="fa-solid fa-download fa-fw me-2 Icon fa-xl"></i><span ' +
+              'class="Label">Save Changes</span>'
             ChildOrder = 1
-            ElementClassName = 'btn btn-danger'
+            ElementClassName = 'btn btn-warning'
             ElementID = 'btnSaveJSON'
             ElementFont = efCSS
             ElementPosition = epIgnore
@@ -236,7 +236,7 @@ object Form1: TForm1
           WidthStyle = ssAuto
           ChildOrder = 1
           ElementFont = efCSS
-          TabIndex = 0
+          TabIndex = 2
           ShowTabs = False
           TabOrder = 1
           object pageActionLog: TWebTabSheet
@@ -290,14 +290,65 @@ object Form1: TForm1
               Role = ''
             end
           end
-          object WebPageControl1Sheet3: TWebTabSheet
+          object tabJSONEDIT: TWebTabSheet
             Left = 0
             Top = 20
             Width = 400
             Height = 280
-            Caption = 'Text'
+            ElementClassName = 'Page'
+            ElementID = 'tabJSONEDIT'
+            Caption = 'JE'
             ChildOrder = 2
             ElementFont = efCSS
+            object divJSONEDIT: TWebHTMLDiv
+              Left = 24
+              Top = 30
+              Width = 369
+              Height = 235
+              ElementID = 'divJSONEDIT'
+              HeightStyle = ssAuto
+              WidthStyle = ssAuto
+              ElementPosition = epIgnore
+              ElementFont = efCSS
+              Role = ''
+              object WebButton2: TWebButton
+                Left = 96
+                Top = 112
+                Width = 96
+                Height = 25
+                Caption = 'JSON Editor'
+                ElementClassName = 'btn btn-light'
+                ElementFont = efCSS
+                ElementPosition = epIgnore
+                HeightStyle = ssAuto
+                HeightPercent = 100.000000000000000000
+                WidthStyle = ssAuto
+                WidthPercent = 100.000000000000000000
+              end
+            end
+          end
+          object pageTextEdit: TWebTabSheet
+            Left = 0
+            Top = 20
+            Width = 400
+            Height = 280
+            ElementClassName = 'Page'
+            ElementID = 'pageTextEdit'
+            Caption = 'TE'
+            ChildOrder = 3
+            ElementFont = efCSS
+            object WebButton1: TWebButton
+              Left = 112
+              Top = 104
+              Width = 96
+              Height = 25
+              Caption = 'Text Edit'
+              ElementClassName = 'btn btn-light'
+              ElementFont = efCSS
+              HeightStyle = ssAuto
+              HeightPercent = 100.000000000000000000
+              WidthPercent = 100.000000000000000000
+            end
           end
         end
       end
@@ -328,5 +379,9 @@ object Form1: TForm1
     OnExecute = OpenJSONExecute
     Left = 136
     Top = 464
+  end
+  object ErrorBox: TMiletusErrorBox
+    Left = 72
+    Top = 536
   end
 end

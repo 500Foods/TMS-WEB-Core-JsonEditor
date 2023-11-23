@@ -44,7 +44,7 @@ type
     pageControl: TWebPageControl;
     pageActionLog: TWebTabSheet;
     pageFileHistory: TWebTabSheet;
-    WebPageControl1Sheet3: TWebTabSheet;
+    tabJSONEDIT: TWebTabSheet;
     divActionLog: TWebHTMLDiv;
     divFileHistory: TWebHTMLDiv;
     divJSONTree: TWebHTMLDiv;
@@ -54,6 +54,11 @@ type
     btnSaveJSON: TWebButton;
     AddConfig: TMiletusOpenDialog;
     OpenJSON: TMiletusOpenDialog;
+    ErrorBox: TMiletusErrorBox;
+    divJSONEDIT: TWebHTMLDiv;
+    pageTextEdit: TWebTabSheet;
+    WebButton1: TWebButton;
+    WebButton2: TWebButton;
     procedure LogEvent(Details: String);
     procedure LogException(Details: String; EClass: String; EMessage: String; EData: String);
     procedure LoadConfigurationDefaults;
@@ -67,6 +72,7 @@ type
     procedure LoadConfig(AFilename: String);
     procedure AddConfigExecute(Sender: TObject; AFileName: string);
     procedure OpenJSONExecute(Sender: TObject; AFileName: string);
+    procedure btnQuitJSONClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -79,6 +85,9 @@ type
 
     tabFileHistory: JSValue;
     tabFileHistoryReady: Boolean;
+
+    DataStr: String;
+    DataJS: JSValue;
   end;
 
 var
@@ -123,6 +132,17 @@ begin
   AddConfig.DefaultExt := '.config';
   AddConfig.InitialDir := StartPath;
   AddConfig.Execute;
+end;
+
+procedure TForm1.btnQuitJSONClick(Sender: TObject);
+begin
+  divJSONTree.Visible := False;
+  divJSONButtons.Visible := False;
+
+  divConfigs.Visible := True;
+  divConfigButtons.Visible := True;
+
+  pageControl.TabIndex := 1;
 end;
 
 procedure TForm1.btnViewActionLogClick(Sender: TObject);
@@ -432,9 +452,79 @@ begin
 end;
 
 procedure TForm1.OpenJSONExecute(Sender: TObject; AFileName: string);
-begin
-  LogEvent('- Loading JSON: '+AFilename);
+var
+  JSONObj: TJSONObject;
+  JSONArr: TJSONArray;
+  JSONFile: TMiletusStringList;
 
+begin
+  LogEvent('Loading JSON: '+AFilename);
+
+  JSONFile := TMiletusStringList.Create;
+  try
+    JSONFile.LoadFromFile(AFileName);
+  except on E: Exception do
+    begin
+      LogException('Load Failed', E.ClassName, E.Message, AFileName);
+      ErrorBox.Title := 'Error Loading JSON File';
+      ErrorBox.Content := 'An error was encountered trying to access the selected file. ';
+      ErrorBox.Execute;
+      exit;
+    end;
+  end;
+
+  LogEvent('Loaded JSON: '+IntToStr(Length(JSONFile.Text))+' bytes');
+
+  // Got anything at all? No? Then we're done here.
+  try
+    JSONArr := TJSONArray.Create;
+    JSONObj := TJSONObject.Create;
+
+    if Copy(Trim(JSONFile.Text),1,1) = '['
+    then JSONArr := TJSONObject.ParseJSONValue(JSONFile.Text) as TJSONArray
+    else JSONObj := TJSONObject.ParseJSONValue(JSONFile.Text) as TJSONObject;
+  except on E: Exception do
+    begin
+      LogException('Parse Failed', E.ClassName, E.Message, AFileName);
+      ErrorBox.Title := 'Error Parsing JSON File';
+      ErrorBox.Content := 'An error was encountered trying to parse the JSON in the selected file. '+
+                          'It will be loaded into an editor where corrections can be made.';
+      ErrorBox.Execute;
+    end;
+  end;
+
+  if JSONObj.Count > 0 then
+  begin
+    LogEvent('JSON Object Parsing Successful: '+InttoStr(JSONObj.Count)+' object elements');
+    DataStr := JSONObj.ToString;
+  end
+  else if JSONArr.Count > 0 then
+  begin
+    if Assigned(JSONArr) then LogEvent('JSON Array Parsing Successful: '+IntToStr(JSONArr.Count)+' array elements');
+    DataStr := JSONArr.ToString;
+  end
+  else
+  begin
+    DataStr := JSONFile.Text;
+  end;
+
+  if DataStr <> '' then
+  begin
+    // Hid the Config Interface
+    divConfigs.Visible := False;
+    divConfigButtons.Visible := False;
+
+    // Show the Edit Interface
+    divJSONTree.Visible := True;
+    divJSONButtons.Visible := True;
+
+    if (JSONObj.Count + JSONArr.Count) = 0
+    then pageControl.TabIndex := 2
+    else
+    begin
+      pageControl.TabIndex := 3
+    end;
+  end;
 end;
 
 procedure TForm1.AddConfigExecute(Sender: TObject; AFileName: string);

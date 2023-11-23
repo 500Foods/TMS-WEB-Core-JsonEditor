@@ -57,6 +57,7 @@ html, body {
   z-index: 0;
 }
 
+#divJSONTree,
 #divConfigs {
   position: relative;
   display: flex;
@@ -69,6 +70,7 @@ html, body {
   overflow: auto;
 }
 
+#divJSONButtons,
 #divConfigButtons {
   position: absolute;
   left: 0px;
@@ -104,8 +106,10 @@ html, body {
   z-index: 0;
 }
 
-#divConfigButtons > button,
-#divConfigs > button {
+#divJSONTree > button,
+#divJSONButtons > button,
+#divConfigs > button,
+#divConfigButtons > button {
   border: 1px solid black;
   border-radius: var(--JE-rounding2);
   text-align: left;
@@ -147,6 +151,9 @@ html, body {
   bottom: 0px;
   overflow: auto;
 }
+#divActionLog > pre {
+  position: absolute;
+}
 
 #divFileHistory {
   border: 1px solid black;
@@ -169,11 +176,26 @@ html, body {
   background-color: transparent;
 }
 .tabulator-row.tabulator-row-odd {
-    background-color: #efefef80;
+  background-color: #efefef80;
 }
 .tabulator-row.tabulator-row-even {
-    background-color: #ffffff80;
+  background-color: #ffffff80;
 }
 .tabulator .tabulator-tableholder .tabulator-table {
-    background-color: transparent;
+  background-color: transparent;
 }
+
+#divJSONEDIT {
+  border: 1px solid black;
+  border-radius: var(--JE-rounding2);
+  font-size: 14px;
+  margin: var(--JE-padding);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: hidden;
+}
+
+

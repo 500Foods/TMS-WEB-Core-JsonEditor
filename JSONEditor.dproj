@@ -358,6 +358,9 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <TMSWebHTMLFile>JSONEditor.html</TMSWebHTMLFile>
+        <Debugger_RunParams>-ShowDebug</Debugger_RunParams>
+        <TMSWebObfuscation>1</TMSWebObfuscation>
+        <TMSWebOptimization>1</TMSWebOptimization>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_10_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
