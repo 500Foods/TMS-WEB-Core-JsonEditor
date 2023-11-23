@@ -36,10 +36,17 @@
     <script type="text/javascript" src="$(ProjectName).js"></script>
     <link  href="JSONEditor.css" rel="stylesheet" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-jsoneditor/themes/jse-theme-default.min.css">
+
     <style></style>
   </head>
 
   <body>
+    <script type="module">
+      import { JSONEditor } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor/index.js';
+      window.JSONEditor = JSONEditor;
+    </script>
+
     <meta $(BodyParameters)>
   </body>
 

@@ -293,20 +293,6 @@ object Form1: TForm1
               ElementPosition = epIgnore
               ElementFont = efCSS
               Role = ''
-              object WebButton2: TWebButton
-                Left = 96
-                Top = 112
-                Width = 96
-                Height = 25
-                Caption = 'JSON Editor'
-                ElementClassName = 'btn btn-light'
-                ElementFont = efCSS
-                ElementPosition = epIgnore
-                HeightStyle = ssAuto
-                HeightPercent = 100.000000000000000000
-                WidthStyle = ssAuto
-                WidthPercent = 100.000000000000000000
-              end
             end
           end
           object pageTextEdit: TWebTabSheet

@@ -57,7 +57,6 @@ type
     divJSONEDIT: TWebHTMLDiv;
     pageTextEdit: TWebTabSheet;
     WebButton1: TWebButton;
-    WebButton2: TWebButton;
     procedure LogEvent(Details: String);
     procedure LogException(Details: String; EClass: String; EMessage: String; EData: String);
     procedure LoadConfigurationDefaults;
@@ -142,6 +141,8 @@ end;
 
 procedure TForm1.btnSaveJSONClick(Sender: TObject);
 begin
+  LogEvent('Editing session ended');
+
   divJSONTree.Visible := False;
   divJSONButtons.Visible := False;
 
@@ -155,6 +156,8 @@ begin
     pas.Unit1.Form1.tabFileHistory.setSort(pas.Unit1.Form1.tabFileHistory.getSorters())
     pas.Unit1.Form1.tabFileHistory.redraw(true);
   } end; {$ENDIF}
+
+  LogEvent('');
 end;
 
 procedure TForm1.btnViewActionLogClick(Sender: TObject);
@@ -170,6 +173,7 @@ begin
   else
   begin
     LogEvent('Closed Action Log');
+    LogEvent('');
     btnViewActionLog.Caption := '<i class="fa-solid fa-scroll fa-fw me-2 Icon fa-xl"></i><span class="Label">View Action Log</span>';
     pageControl.TabIndex := 1;
     btnViewActionLog.Tag := 0;
@@ -642,7 +646,6 @@ begin
       then JSONDesc := (JSONObj.GetValue('ServerName') as TJSONString).Value;
     end;
 
-//    FileHistory := '';
     {$IFNDEF WIN32} asm {
       var tab = pas.Unit1.Form1.tabFileHistory;
       var ConfigNum = tab.getDataCount();
@@ -657,17 +660,42 @@ begin
       });
       FileHistory = JSON.stringify(tab.getData());
     } end; {$ENDIF}
-  end;
 
-  LogEvent('Saving File History');
-  FileHistoryFile := TMiletusStringList.Create;
-  FileHistoryFile.Text := FileHistory;
-  try
-    FileHistoryFile.SaveToFile(AppPath+'/Recent.history');
-  except on E: Exception do
-    begin
-      LogException('Saving File History', E.ClassName, E.Message, 'Recent.history');
+    LogEvent('Saving File History');
+    FileHistoryFile := TMiletusStringList.Create;
+    FileHistoryFile.Text := FileHistory;
+    try
+      FileHistoryFile.SaveToFile(AppPath+'/Recent.history');
+    except on E: Exception do
+      begin
+        LogException('Saving File History', E.ClassName, E.Message, 'Recent.history');
+      end;
     end;
+
+    LogEvent('');
+    LogEvent('Editing Session started');
+
+    asm
+      divJSONEDIT.replaceChildren();
+
+      let content = {
+        text: undefined,
+        json: JSON.parse(pas.Unit1.Form1.DataStr)
+      }
+
+      const editor = new JSONEditor({
+        target: document.getElementById('divJSONEDIT'),
+        props: {
+          content,
+          onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+            // content is an object { json: JSONValue } | { text: string }
+            console.log('onChange', { updatedContent, previousContent, contentErrors, patchResult })
+            content = updatedContent
+          }
+        }
+      })
+    end;
+
   end;
 
 end;
