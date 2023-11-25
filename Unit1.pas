@@ -677,6 +677,7 @@ begin
 
     asm
       divJSONEDIT.replaceChildren();
+      divJSONEDIT.classList.add('jse-theme-dark');
 
       let content = {
         text: undefined,
@@ -694,6 +695,7 @@ begin
           }
         }
       })
+
     end;
 
   end;

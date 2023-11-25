@@ -198,4 +198,10 @@ html, body {
   overflow: hidden;
 }
 
+#divJSONEDIT > div > div > div.jse-menu {
+  padding-left: 7px;
+}
+#divJSONEDIT > div > div > div.jse-status-bar {
+  padding-left: 7px;
+}
 
