@@ -39,14 +39,19 @@ As with any modern web application, other JavaScript libraries/dependencies have
 While this project is currently under active development, feel free to give it a try and post any issues you encounter.  Or start a discussion if you would like to help steer the project in a particular direction.  Early days yet, so a good time to have your voice heard.  As the project unfolds, additional resources will be made available, including platform binaries, more documentation, demos, and so on.
 
 ## Repository Information 
-[![Count Lines of Code](https://github.com/500Foods/Catheedral/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/Catheedral/actions/workflows/main.yml)
+[![Count Lines of Code](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml)
 ```
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-
+Pascal                           3            122            145            573
+Delphi Form                      1              0              0            355
+CSS                              1             20              0            187
+HTML                             3             15              6             68
+Markdown                         1              9              0             45
+YAML                             2              4              8             15
 -------------------------------------------------------------------------------
-SUM:                             0             0               0              0
+SUM:                            11            170            159           1243
 -------------------------------------------------------------------------------
 ```
 
