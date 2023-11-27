@@ -215,10 +215,10 @@
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
         <SanitizedProjectName>JSONEditor</SanitizedProjectName>
-        <TMSWebMiletusResIconLinuxFile>MiletusLinux.png</TMSWebMiletusResIconLinuxFile>
-        <TMSWebMiletusResIconMacOSFile>MiletusMac.icns</TMSWebMiletusResIconMacOSFile>
-        <TMSWebHTMLFile>Project1.html</TMSWebHTMLFile>
         <Custom_Styles>&quot;Charcoal Dark Slate|VCLSTYLE|$(BDSCOMMONDIR)\Styles\CharcoalDarkSlate.vsf&quot;</Custom_Styles>
+        <TMSWebMiletusResIconMacOSFile>MiletusMac.icns</TMSWebMiletusResIconMacOSFile>
+        <TMSWebMiletusResIconLinuxFile>MiletusLinux.png</TMSWebMiletusResIconLinuxFile>
+        <TMSWebHTMLFile>Project1.html</TMSWebHTMLFile>
         <TMSWebMiletusResIconWindowsFile>MiletusWindows.ico</TMSWebMiletusResIconWindowsFile>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
