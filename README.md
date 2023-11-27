@@ -40,20 +40,10 @@ While this project is currently under active development, feel free to give it a
 
 ## Repository Information 
 [![Count Lines of Code](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml)
+<!--CLOC-START -->
 ```
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Pascal                           3            122            145            573
-Delphi Form                      1              0              0            355
-CSS                              1             20              0            187
-HTML                             3             15              6             68
-Markdown                         1              9              0             45
-YAML                             2              4              8             15
--------------------------------------------------------------------------------
-SUM:                            11            170            159           1243
--------------------------------------------------------------------------------
 ```
+<!--CLOC-END-->
 
 ## Sponsor / Donate / Support
 If you find this work interesting, helpful, or valuable, or that it has saved you time, money, or both, please consider directly supporting these efforts financially via [GitHub Sponsors](https://github.com/sponsors/500Foods) or donating via [Buy Me a Pizza](https://www.buymeacoffee.com/andrewsimard500). Also, check out these other [GitHub Repositories](https://github.com/500Foods?tab=repositories&q=&sort=stargazers) that may interest you.
