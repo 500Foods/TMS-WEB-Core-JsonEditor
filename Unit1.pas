@@ -136,11 +136,12 @@ end;
 
 procedure TForm1.btnLoadConfigClick(Sender: TObject);
 begin
-  LogEvent('Load Config Clicked');
 
   // Close Action Log Viewer if open
   if btnViewActionLog.Tag = 1
   then btnViewActionLogClick(nil);
+
+  LogEvent('Load Config Clicked');
 
   AddConfig.Title := 'Open a '+Form1.Caption+' Config File';
   AddConfig.FileName := '';
@@ -199,6 +200,8 @@ end;
 procedure TForm1.ConfigClick(ConfigID: String; ConfigName: String);
 var
   StartPath: String;
+  Extension: String;
+  Filter: String;
 begin
   LogEvent('Config Clicked: '+ConfigName+' [ '+ConfigID+' ]');
   CurrentConfig := StrToInt(StringReplace(ConfigID,'Config','',[]));
@@ -207,9 +210,19 @@ begin
   if btnViewActionLog.Tag = 1
   then btnViewActionLogClick(nil);
 
+  Extension := '.json';
+  if (AllConfigs.Items[CurrentConfig] as TJSONObject).GetValue('Extension') <> nil
+  then Extension := ((AllConfigs.Items[CurrentConfig] as TJSONObject).GetValue('Extension') as TJSONString).Value;
+
+  Filter := 'Config Files|*.config|JSON Files|*.json|All files|*.*';
+  if (AllConfigs.Items[CurrentConfig] as TJSONObject).GetValue('Filter') <> nil
+  then Filter := ((AllConfigs.Items[CurrentConfig] as TJSONObject).GetValue('Filter') as TJSONString).Value;
+
   OpenJSON.Title := 'Open a JSON File: '+ConfigName;
   OpenJSON.FileName := '';
-  OpenJSON.DefaultExt := '.json';
+  OpenJSON.Filter := Filter;
+  OpenJSON.FilterIndex := 0;
+  OpenJSON.DefaultExt := Extension;
   OpenJSON.InitialDir := StartPath;
   OpenJSON.Execute;
 end;
@@ -306,6 +319,7 @@ begin
       headerSortStartingDir: "desc",
       headerSortTristate: true
     };
+
   } end; {$ENDIF}
 
   // File History
@@ -316,7 +330,8 @@ begin
       selectable: 1,
       rowHeight: 28,
       columnDefaults:{
-        resizable: false
+        resizable: false,
+        headerSortTristate: true
       },
       initialSort: [{column:"Accessed", dir:"desc"}],
       columns: [
@@ -356,9 +371,11 @@ var
   Config: TJSONObject;
   BFileName: String;
 begin
-  BFileName := StringReplace(AFileName,'\\','/',[rfReplaceAll]);
+  BFileName := StringReplace(AFileName,'\','/',[rfReplaceAll]);
   if Pos('/',BFileName) = 0
   then BFileName := AppPath+'/'+BFileName;
+
+  LogEvent('- Loading Config: '+BFilename);
 
   ConfigFile := TMiletusStringList.Create;
   try
@@ -380,7 +397,7 @@ begin
     AllConfigs.Add(Config);
   except on E: Exception do
     begin
-      LogException('Parse Config Failed', E.ClassName, E.Message, AFilename);
+      LogException('Parse Config Failed: '+AFilename, E.ClassName, E.Message, Config.ToString);
     end;
   end;
 end;
@@ -731,7 +748,6 @@ end;
 
 procedure TForm1.AddConfigExecute(Sender: TObject; AFileName: string);
 begin
-  LogEvent('- Loading Config: '+AFilename);
   LoadConfig(AFilename);
 end;
 
@@ -807,8 +823,10 @@ begin
     s := ConfigFile.Text;
     asm
       var filehistory = JSON.parse(s);
-      this.tabFileHistory.replaceData(filehistory);
-      i = this.tabFileHistory.getDataCount();
+      if (filehistory.length > 0) {
+        this.tabFileHistory.replaceData(filehistory);
+        i = this.tabFileHistory.getDataCount();
+      }
     end;
   end;
   LogEvent('- File History Records Found: '+IntToStr(i));

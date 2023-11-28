@@ -113,7 +113,6 @@ html, body {
   border: 1px solid black;
   border-radius: var(--JE-rounding2);
   text-align: left;
-  height: 34px;
   width: 100%;
 }
 

@@ -86,8 +86,8 @@ object Form1: TForm1
           Width = 80
           Height = 25
           Caption = 
-            '<i class="fa-solid fa-upload fa-fw Icon me-2 fa-xl"></i><span cl' +
-            'ass="Label">Load Configuration</span>'
+            '<i class="fa-solid fa-arrow-up fa-fw Icon me-2 fa-xl"></i><span ' +
+            'class="Label">Load Configuration</span>'
           ElementClassName = 'btn btn-sm btn-primary'
           ElementID = 'btnLoadConfig'
           ElementFont = efCSS
