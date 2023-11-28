@@ -91,6 +91,16 @@ type
     DataJS: JSValue;
 
     CurrentConfig: Integer;
+
+    // These are used when code exists in Delphi that is primarily used in JavaScript.
+    // Eg: methods that are called from JavaScript but not other Delphi methods
+    procedure StopLinkerRemoval(P: Pointer);
+    // These are used when code exists in Delphi that is primarily used in JavaScript.
+    // Eg: Local variable "x" is assigned but never used
+    procedure PreventCompilerHint(I: integer); overload;
+    procedure PreventCompilerHint(S: string); overload;
+    procedure PreventCompilerHint(J: JSValue); overload;
+    procedure PreventCompilerHint(H: TJSHTMLElement); overload;
   end;
 
 var
@@ -188,7 +198,6 @@ end;
 
 procedure TForm1.ConfigClick(ConfigID: String; ConfigName: String);
 var
-  i: Integer;
   StartPath: String;
 begin
   LogEvent('Config Clicked: '+ConfigName+' [ '+ConfigID+' ]');
@@ -531,6 +540,7 @@ var
 
   FileHistory: String;
   FileHistoryFile: TMiletusStringList;
+  Cleaned: Integer;
 begin
   LogEvent('Loading JSON: '+AFilename);
 
@@ -648,7 +658,19 @@ begin
 
     {$IFNDEF WIN32} asm {
       var tab = pas.Unit1.Form1.tabFileHistory;
-      var ConfigNum = tab.getDataCount();
+      var ConfigNum = -1;
+      var rows = tab.getRows();
+      Cleaned = 0;
+      for (var i = rows.length - 1; i > -1; i--) {
+        ConfigNum = Math.max(ConfigNum, rows[i].getCell('ID').getValue())
+        if ((rows[i].getCell('Type').getValue() == ConfigName) &&
+            (rows[i].getCell('Filename').getValue() == AFileName)) {
+            tab.deleteRow(rows[i]);
+            Cleaned = Cleaned + 1;
+        }
+      }
+      ConfigNum = ConfigNum + 1;
+
       tab.addRow({
         "ID": ConfigNum,
         "Type": ConfigName,
@@ -658,10 +680,11 @@ begin
         "Filename": AFileName,
         "Accessed": ConfigTime
       });
+      tab.redraw(true);
       FileHistory = JSON.stringify(tab.getData());
     } end; {$ENDIF}
 
-    LogEvent('Saving File History');
+    LogEvent('Saving File History (Cleaned: '+IntToStr(Cleaned)+')');
     FileHistoryFile := TMiletusStringList.Create;
     FileHistoryFile.Text := FileHistory;
     try
@@ -700,6 +723,10 @@ begin
 
   end;
 
+  PreventCompilerHint(JSONDesc);
+  PreventCompilerHint(ConfigIcon);
+  PreventCompilerHint(ConfigClass);
+  PreventcompilerHint(ConfigTime);
 end;
 
 procedure TForm1.AddConfigExecute(Sender: TObject; AFileName: string);
@@ -712,7 +739,6 @@ procedure TForm1.tmrStartTimer(Sender: TObject);
 var
   i: Integer;
   s: String;
-  Config: TJSONObject;
   Configs: TJSONArray;
   ConfigName: String;
   ConfigFile: TMiletusStringList;
@@ -793,7 +819,14 @@ begin
   LogEvent('Ready');
   LogEvent('');
 
+  PreventCompilerHint(s);
 end;
+
+procedure TForm1.StopLinkerRemoval(P: Pointer);                          begin end;
+procedure TForm1.PreventCompilerHint(H: TJSHTMLElement);       overload; begin end;
+procedure TForm1.PreventCompilerHint(I: integer);              overload; begin end;
+procedure TForm1.PreventCompilerHint(J: JSValue);              overload; begin end;
+procedure TForm1.PreventCompilerHint(S: string);               overload; begin end;
 
 initialization
   RegisterClass(TForm1);
