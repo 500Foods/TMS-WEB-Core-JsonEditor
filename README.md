@@ -42,7 +42,7 @@ While this project is currently under active development, feel free to give it a
 [![Count Lines of Code](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml)
 <!--CLOC-START -->
 ```
-Last Updated at 2023-11-28 21:52:17 UTC
+Last Updated at 2023-11-28 22:09:00 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
@@ -51,10 +51,12 @@ Delphi Form                      1              0              0            355
 CSS                              1             20              0            186
 HTML                             3             15              6             68
 Markdown                         1              8              2             52
-YAML                             2              8             12             33
+YAML                             2              8             12             35
 -------------------------------------------------------------------------------
-SUM:                            11            181            181           1294
+SUM:                            11            181            181           1296
 -------------------------------------------------------------------------------
+8 cloc-ignored.txt
+ File(s) were skipped
 ```
 <!--CLOC-END-->
 
