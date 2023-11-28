@@ -42,7 +42,7 @@ While this project is currently under active development, feel free to give it a
 [![Count Lines of Code](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml)
 <!--CLOC-START -->
 ```
-Last Updated at 2023-11-28 22:17:42 UTC
+Last updated at 2023-11-28 22:22:46 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
@@ -50,10 +50,10 @@ Pascal                           3            130            161            600
 Delphi Form                      1              0              0            355
 CSS                              1             20              0            186
 HTML                             3             15              6             68
-Markdown                         1              8              2             62
+Markdown                         1              8              2             53
 YAML                             2              8             13             35
 -------------------------------------------------------------------------------
-SUM:                            11            181            182           1306
+SUM:                            11            181            182           1297
 -------------------------------------------------------------------------------
 8 Files (without source code) were skipped
 ```
