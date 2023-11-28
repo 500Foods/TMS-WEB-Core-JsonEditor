@@ -42,7 +42,7 @@ While this project is currently under active development, feel free to give it a
 [![Count Lines of Code](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml/badge.svg)](https://github.com/500Foods/TMS-WEB-Core-JsonEditor/actions/workflows/main.yml)
 <!--CLOC-START -->
 ```
-Last Updated at 2023-11-28 22:09:00 UTC
+Last Updated at 2023-11-28 22:13:12 UTC
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
@@ -50,13 +50,21 @@ Pascal                           3            130            161            600
 Delphi Form                      1              0              0            355
 CSS                              1             20              0            186
 HTML                             3             15              6             68
-Markdown                         1              8              2             52
-YAML                             2              8             12             35
+Markdown                         1              8              2             54
+YAML                             2              8             12             36
 -------------------------------------------------------------------------------
-SUM:                            11            181            181           1296
+SUM:                            11            181            181           1299
 -------------------------------------------------------------------------------
-8 cloc-ignored.txt
- File(s) were skipped
+8
+ File(s) without source code were skipped
+/tmp/9mr41e3YOn/.gitattributes:  language unknown (#3)
+/tmp/9mr41e3YOn/.gitignore:  listed in $Not_Code_Extension{gitignore}
+/tmp/9mr41e3YOn/JSONEditor.dproj:  language unknown (#3)
+/tmp/9mr41e3YOn/LICENSE:  language unknown (#3)
+/tmp/9mr41e3YOn/MiletusLinux.png:  binary file
+/tmp/9mr41e3YOn/MiletusMac.icns:  binary file
+/tmp/9mr41e3YOn/MiletusWindows.ico:  binary file
+/tmp/9mr41e3YOn/Project1.dproj:  language unknown (#3)
 ```
 <!--CLOC-END-->
 
