@@ -38,7 +38,7 @@ jobs:
     - run: echo "<!--CLOC-START -->" >> README.md
     - run: echo "\`\`\`" >> README.md
     - run: echo "NOW=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_ENV
-    - run: echo "Last Updated at ${{ env.NOW }}" >> README.md
+    - run: echo "Last updated at ${{ env.NOW }}" >> README.md
     - run: tail -n +2 cloc.txt >> README.md
     - run: echo "SKIP=$(wc -l < cloc-ignored.txt)" >> $GITHUB_ENV
     - run: echo "${{ env.SKIP }} Files (without source code) were skipped" >> README.md
